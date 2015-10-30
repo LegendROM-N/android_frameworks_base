@@ -86,6 +86,7 @@ public class StatusBarIconController extends StatusBarIconList implements Tunabl
     private NetworkTraffic mNetworkTraffic;
     private TextView mWeatherTextView;
     private ImageView mWeatherImageView;
+    private TextView mCarrierLabel;
 
     private int mIconSize;
     private int mIconHPadding;
@@ -148,6 +149,7 @@ public class StatusBarIconController extends StatusBarIconList implements Tunabl
         mDarkModeIconColorSingleTone = context.getColor(R.color.dark_mode_icon_color_single_tone);
         mLightModeIconColorSingleTone = context.getColor(R.color.light_mode_icon_color_single_tone);
 	mNetworkTraffic = (NetworkTraffic) statusBar.findViewById(R.id.networkTraffic);
+        mCarrierLabel = (TextView) statusBar.findViewById(R.id.statusbar_carrier_text);
         mHandler = new Handler();
         mClockController = new ClockController(statusBar, mNotificationIconAreaController, mHandler);
         mCenterClockLayout = statusBar.findViewById(R.id.center_clock_layout);
@@ -341,11 +343,13 @@ public class StatusBarIconController extends StatusBarIconList implements Tunabl
     public void hideSystemIconArea(boolean animate) {
         animateHide(mSystemIconArea, animate);
         animateHide(mCenterClockLayout, animate);
+        animateHide(mCarrierLabel,animate);
     }
 
     public void showSystemIconArea(boolean animate) {
         animateShow(mSystemIconArea, animate);
         animateShow(mCenterClockLayout, animate);
+        animateShow(mCarrierLabel,animate);
     }
 
     public void hideNotificationIconArea(boolean animate) {
@@ -562,6 +566,18 @@ public class StatusBarIconController extends StatusBarIconList implements Tunabl
         mPhoneStatusBar.setTickerTint(mIconTint);
         mWeatherTextView.setTextColor(mIconTint);
         mWeatherImageView.setImageTintList(ColorStateList.valueOf(mIconTint));
+		if (Settings.System.getIntForUser(mContext.getContentResolver(),
+                Settings.System.NETWORK_TRAFFIC_COLOR, 0xFFFFFFFF,
+                UserHandle.USER_CURRENT) == 0xFFFFFFFF) {
+ 		mNetworkTraffic.setDarkIntensity(mDarkIntensity);
+		}
+        if (Settings.System.getIntForUser(mContext.getContentResolver(),
+                Settings.System.STATUS_BAR_CARRIER_COLOR,
+                mContext.getResources().getColor(R.color.status_bar_clock_color),
+                UserHandle.USER_CURRENT) == mContext.getResources().
+                getColor(R.color.status_bar_clock_color)) {
+        mCarrierLabel.setTextColor(mIconTint);
+        }
     }
 
     public void appTransitionPending() {

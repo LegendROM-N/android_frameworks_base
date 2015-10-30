@@ -56,11 +56,13 @@ public class KeyguardStatusBarView extends RelativeLayout
     private boolean mKeyguardUserSwitcherShowing;
     private boolean mBatteryListening;
 
-    private TextView mCarrierLabel;
     private View mSystemIconsSuperContainer;
     private MultiUserSwitch mMultiUserSwitch;
     private ImageView mMultiUserAvatar;
     private TextView mBatteryLevel;
+
+    private TextView mCarrierLabel;
+    private int mShowCarrierLabel;
 
     private BatteryController mBatteryController;
     private KeyguardUserSwitcher mKeyguardUserSwitcher;
@@ -75,7 +77,25 @@ public class KeyguardStatusBarView extends RelativeLayout
 
     public KeyguardStatusBarView(Context context, AttributeSet attrs) {
         super(context, attrs);
+	}
+    private ContentObserver mObserver = new ContentObserver(new Handler()) {
+        public void onChange(boolean selfChange, Uri uri) {
+            showStatusBarCarrier();
+            updateVisibilities();
+        }
+    };
+
+    public KeyguardStatusBarView(Context context, AttributeSet attrs) {
+        super(context, attrs);
+        showStatusBarCarrier();
     }
+
+    private void showStatusBarCarrier() {
+        mShowCarrierLabel = Settings.System.getIntForUser(getContext().getContentResolver(),
+                Settings.System.STATUS_BAR_SHOW_CARRIER, 1, UserHandle.USER_CURRENT);
+    }
+
+    
 
     @Override
     protected void onFinishInflate() {
@@ -178,6 +198,15 @@ public class KeyguardStatusBarView extends RelativeLayout
         }
         mBatteryLevel.setVisibility(
                 mBatteryCharging || mShowBatteryText || mForceBatteryText ? View.VISIBLE : View.GONE);
+        if (mCarrierLabel != null) {
+            if (mShowCarrierLabel == 1) {
+                mCarrierLabel.setVisibility(View.VISIBLE);
+            } else if (mShowCarrierLabel == 3) {
+                mCarrierLabel.setVisibility(View.VISIBLE);
+            } else {
+                mCarrierLabel.setVisibility(View.GONE);
+            }
+        }
     }
 
     private void updateSystemIconsLayoutParams() {
@@ -344,5 +373,9 @@ public class KeyguardStatusBarView extends RelativeLayout
 		    CMSettings.System.STATUS_BAR_BATTERY_STYLE, 0) == 6 ? true : false;
             updateVisibilities();
         }
+    public void onAttachedToWindow() {
+        super.onAttachedToWindow();
+        getContext().getContentResolver().registerContentObserver(Settings.System.getUriFor(
+                "status_bar_show_carrier"), false, mObserver);
     }
 }
