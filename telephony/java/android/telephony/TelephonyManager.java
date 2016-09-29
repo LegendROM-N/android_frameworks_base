@@ -1648,6 +1648,17 @@ public class TelephonyManager {
     }
 
     /**
+     * {@hide}
+     */
+    public void toggleLTE(boolean on) {
+        try {
+            getITelephony().toggleLTE(on);
+        } catch (RemoteException e) {
+            //Silently fail
+        }
+    }
+
+    /**
      * Returns the NETWORK_TYPE_xxxx for voice
      *
      * <p>
