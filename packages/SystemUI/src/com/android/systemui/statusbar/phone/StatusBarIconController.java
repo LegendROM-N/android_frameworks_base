@@ -343,12 +343,24 @@ public class StatusBarIconController extends StatusBarIconList implements Tunabl
     public void hideSystemIconArea(boolean animate) {
         animateHide(mSystemIconArea, animate);
         animateHide(mCenterClockLayout, animate);
+        if ((Settings.System.getIntForUser(mContext.getContentResolver(),
+                Settings.System.STATUS_BAR_SHOW_CARRIER,  0,
+                UserHandle.USER_CURRENT) == 2) ||
+			(Settings.System.getIntForUser(mContext.getContentResolver(),
+                Settings.System.STATUS_BAR_SHOW_CARRIER,  0,
+                UserHandle.USER_CURRENT) == 3)) {
         animateHide(mCarrierLabel,animate);
     }
 
     public void showSystemIconArea(boolean animate) {
         animateShow(mSystemIconArea, animate);
         animateShow(mCenterClockLayout, animate);
+        if ((Settings.System.getIntForUser(mContext.getContentResolver(),
+                Settings.System.STATUS_BAR_SHOW_CARRIER,  0,
+                UserHandle.USER_CURRENT) == 2) ||
+			(Settings.System.getIntForUser(mContext.getContentResolver(),
+                Settings.System.STATUS_BAR_SHOW_CARRIER,  0,
+                UserHandle.USER_CURRENT) == 3)) {
         animateShow(mCarrierLabel,animate);
     }
 
