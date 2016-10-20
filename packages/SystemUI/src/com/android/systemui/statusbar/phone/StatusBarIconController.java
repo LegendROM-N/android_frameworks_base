@@ -37,6 +37,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.provider.Settings;
 
 import com.android.internal.statusbar.StatusBarIcon;
 import com.android.systemui.statusbar.policy.NetworkTraffic;
@@ -350,7 +351,8 @@ public class StatusBarIconController extends StatusBarIconList implements Tunabl
                 Settings.System.STATUS_BAR_SHOW_CARRIER,  0,
                 UserHandle.USER_CURRENT) == 3)) {
         animateHide(mCarrierLabel,animate);
-    }
+     } 
+   }
 
     public void showSystemIconArea(boolean animate) {
         animateShow(mSystemIconArea, animate);
@@ -362,6 +364,7 @@ public class StatusBarIconController extends StatusBarIconList implements Tunabl
                 Settings.System.STATUS_BAR_SHOW_CARRIER,  0,
                 UserHandle.USER_CURRENT) == 3)) {
         animateShow(mCarrierLabel,animate);
+	}
     }
 
     public void hideNotificationIconArea(boolean animate) {
@@ -578,11 +581,6 @@ public class StatusBarIconController extends StatusBarIconList implements Tunabl
         mPhoneStatusBar.setTickerTint(mIconTint);
         mWeatherTextView.setTextColor(mIconTint);
         mWeatherImageView.setImageTintList(ColorStateList.valueOf(mIconTint));
-		if (Settings.System.getIntForUser(mContext.getContentResolver(),
-                Settings.System.NETWORK_TRAFFIC_COLOR, 0xFFFFFFFF,
-                UserHandle.USER_CURRENT) == 0xFFFFFFFF) {
- 		mNetworkTraffic.setDarkIntensity(mDarkIntensity);
-		}
         if (Settings.System.getIntForUser(mContext.getContentResolver(),
                 Settings.System.STATUS_BAR_CARRIER_COLOR,
                 mContext.getResources().getColor(R.color.status_bar_clock_color),

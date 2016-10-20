@@ -17,9 +17,13 @@
 package com.android.systemui.statusbar.phone;
 
 import android.content.Context;
+import android.database.ContentObserver;
 import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
+import android.net.Uri;
+import android.os.Handler;
+import android.provider.Settings;
 import android.util.AttributeSet;
 import android.util.TypedValue;
 import android.view.View;
@@ -27,7 +31,8 @@ import android.view.ViewTreeObserver;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-
+import android.os.Handler;
+import android.os.UserHandle;
 import com.android.systemui.BatteryMeterDrawable;
 import com.android.systemui.BatteryMeterView;
 import com.android.systemui.Interpolators;
@@ -75,9 +80,6 @@ public class KeyguardStatusBarView extends RelativeLayout
     private boolean mShowBatteryText;
     private boolean mForceBatteryText;
 
-    public KeyguardStatusBarView(Context context, AttributeSet attrs) {
-        super(context, attrs);
-	}
     private ContentObserver mObserver = new ContentObserver(new Handler()) {
         public void onChange(boolean selfChange, Uri uri) {
             showStatusBarCarrier();
@@ -373,6 +375,7 @@ public class KeyguardStatusBarView extends RelativeLayout
 		    CMSettings.System.STATUS_BAR_BATTERY_STYLE, 0) == 6 ? true : false;
             updateVisibilities();
         }
+     }
     public void onAttachedToWindow() {
         super.onAttachedToWindow();
         getContext().getContentResolver().registerContentObserver(Settings.System.getUriFor(
