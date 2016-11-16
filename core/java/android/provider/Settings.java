@@ -3993,6 +3993,12 @@ public final class Settings {
          */
         public static final String STATUS_BAR_CUSTOM_HEADER_IMAGE = "status_bar_custom_header_image";
 
+	/**
+         * Quick Settings number of columns
+         * @hide
+         */
+        public static final String QS_LAYOUT_COLUMNS = "qs_layout_columns";
+
         /**
          * Settings to backup. This is here so that it's in the same place as the settings
          * keys and easy to update.

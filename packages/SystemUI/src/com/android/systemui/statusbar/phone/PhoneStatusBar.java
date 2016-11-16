@@ -395,6 +395,8 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
     View mExpandedContents;
     TextView mNotificationPanelDebugText;
 
+    private int mQsLayoutColumns;
+
     // settings
     private QSPanel mQSPanel;
     private DevForceNavbarObserver mDevForceNavbarObserver;
@@ -583,6 +585,9 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
 	    resolver.registerContentObserver(Settings.System.getUriFor(
 		Settings.System.STATUS_BAR_CUSTOM_HEADER),
 		false, this, UserHandle.USER_ALL);
+	    resolver.registerContentObserver(Settings.System.getUriFor(
+                Settings.System.QS_LAYOUT_COLUMNS),
+                false, this, UserHandle.USER_ALL);
             update();
         }
 
@@ -695,6 +700,13 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
             ContentResolver resolver = mContext.getContentResolver();
             resolver.registerContentObserver(CMSettings.Global.getUriFor(
                     CMSettings.Global.DEV_FORCE_SHOW_NAVBAR), false, this, UserHandle.USER_ALL);
+        }
+
+	mQsLayoutColumns = Settings.System.getIntForUser(resolver,
+                    Settings.System.QS_LAYOUT_COLUMNS, 3, mCurrentUserId);
+
+	if (mHeader != null) {
+                mHeader.updateSettings();
         }
 
         @Override
