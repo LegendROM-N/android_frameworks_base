@@ -994,7 +994,7 @@ public class RecentsView extends FrameLayout {
         mMemBar.getProgressDrawable().setColorFilter(mMemBarColor, Mode.MULTIPLY);
             int available = (int)(memInfo.availMem / 1048576L);
             int max = (int)(getTotalMemory() / 1048576L);
-            mMemText.setText(String.format(getResources().getString(R.string.recents_free_ram)) + ": " + String.valueOf(available) + "MB");
+	    mMemText.setText(String.format(getResources().getString(R.string.recents_free_ram),available));
             mMemBar.setMax(max);
             mMemBar.setProgress(available);
     }
