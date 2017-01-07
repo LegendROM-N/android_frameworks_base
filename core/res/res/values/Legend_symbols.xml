@@ -88,4 +88,8 @@
   <java-symbol type="style" name="Theme_DeviceDefault_White_Pink" />
   <java-symbol type="style" name="Theme_DeviceDefault_White_Cyan" />
   <java-symbol type="style" name="Theme_DeviceDefault_White_Grey" />
+
+  <!-- sRGB mode -->
+  <java-symbol type="string" name="config_srgb_path" />
+
 </resources>

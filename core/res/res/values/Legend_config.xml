@@ -63,4 +63,7 @@
     <!-- Defines the length of FP unlock boost -->
     <integer name="fpunlockboost_duration">1200</integer>
 
+    <!-- sRGB sysfs path -->
+    <string name="config_srgb_path"></string>
+
 </resources>
