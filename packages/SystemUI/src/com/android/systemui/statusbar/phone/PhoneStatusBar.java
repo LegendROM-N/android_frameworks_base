@@ -136,6 +136,7 @@ import com.android.keyguard.KeyguardHostView.OnDismissAction;
 import com.android.keyguard.KeyguardUpdateMonitor;
 import com.android.keyguard.KeyguardUpdateMonitorCallback;
 import com.android.keyguard.ViewMediatorCallback;
+import com.android.systemui.Legend.StatusBarHeaderMachine;
 import com.android.systemui.AutoReinflateContainer;
 import com.android.systemui.AutoReinflateContainer.InflateListener;
 import com.android.systemui.BatteryLevelTextView;
@@ -407,6 +408,9 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
     // task manager click state
     private boolean mShowTaskList = false;
 
+    // qs headers
+    private StatusBarHeaderMachine mStatusBarHeaderMachine;
+
     // top bar
     BaseStatusBarHeader mHeader;
     protected KeyguardStatusBarView mKeyguardStatusBar;
@@ -573,6 +577,12 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
 	    resolver.registerContentObserver(Settings.System.getUriFor(
                  Settings.System.ENABLE_TASK_MANAGER),
                  false, this, UserHandle.USER_ALL);
+	    resolver.registerContentObserver(Settings.System.getUriFor(
+		Settings.System.STATUS_BAR_CUSTOM_HEADER_SHADOW),
+		false, this, UserHandle.USER_ALL);
+	    resolver.registerContentObserver(Settings.System.getUriFor(
+		Settings.System.STATUS_BAR_CUSTOM_HEADER),
+		false, this, UserHandle.USER_ALL);
             update();
         }
 
@@ -1250,6 +1260,8 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
         }
         mWeatherController = new WeatherControllerImpl(mContext);
 
+        mStatusBarHeaderMachine = new StatusBarHeaderMachine(mContext);
+
         // Set up the quick settings tile panel
         AutoReinflateContainer container = (AutoReinflateContainer) mStatusBarWindow.findViewById(
                 R.id.qs_auto_reinflate_container);
@@ -1272,6 +1284,13 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
                     mQSPanel.setBrightnessMirror(mBrightnessMirrorController);
                     mKeyguardStatusBar.setQSPanel(mQSPanel);
                     mHeader = qsContainer.getHeader();
+
+                    // on dpi changes the header is recreated so we need
+                    // to add the new one again as addObserver
+                    // the old one will be removed in the same step
+                    mStatusBarHeaderMachine.addObserver((QuickStatusBarHeader) mHeader);
+                    mStatusBarHeaderMachine.updateEnablement();
+
                     initSignalCluster(mHeader);
                     mHeader.setActivityStarter(PhoneStatusBar.this);
                 }
@@ -4239,6 +4258,7 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
         mLockscreenWallpaper.setCurrentUser(newUserId);
         mScrimController.setCurrentUser(newUserId);
         updateMediaMetaData(true, false);
+	mStatusBarHeaderMachine.updateEnablement();
     }
 
     private void setControllerUsers() {
