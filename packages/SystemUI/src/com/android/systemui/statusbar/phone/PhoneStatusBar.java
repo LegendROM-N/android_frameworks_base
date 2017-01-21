@@ -700,6 +700,13 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
                     
             RecentsActivity.updateBlurColors(mBlurDarkColorFilter,mBlurMixedColorFilter,mBlurLightColorFilter);        
             RecentsActivity.updateRadiusScale(mScaleRecents,mRadiusRecents);
+
+	    mQsLayoutColumns = Settings.System.getIntForUser(resolver,
+                    Settings.System.QS_LAYOUT_COLUMNS, 3, mCurrentUserId);
+
+            if (mHeader != null) {
+                mHeader.updateSettings();
+            }
         }
     }
 
@@ -714,13 +721,6 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
             ContentResolver resolver = mContext.getContentResolver();
             resolver.registerContentObserver(CMSettings.Global.getUriFor(
                     CMSettings.Global.DEV_FORCE_SHOW_NAVBAR), false, this, UserHandle.USER_ALL);
-        }
-
-	mQsLayoutColumns = Settings.System.getIntForUser(resolver,
-                    Settings.System.QS_LAYOUT_COLUMNS, 3, mCurrentUserId);
-
-	if (mHeader != null) {
-                mHeader.updateSettings();
         }
 
         @Override
