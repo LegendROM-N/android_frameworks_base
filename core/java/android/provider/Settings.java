@@ -3857,12 +3857,6 @@ public final class Settings {
          */
         public static final String DISABLE_DASHBOARD_CONDITIONS = "disable_dashboard_conditions";
 
-	/**
-         * Whether to show dashboard summaries in a single line or not
-         * @hide
-         */
-        public static final String DASHBOARD_SUMMARY_DOUBLE_LINES = "dashboard_summary_double_lines";
-
         /**
          * Disable dashboard suggestions in settings
          * @hide
@@ -4024,11 +4018,17 @@ public final class Settings {
          */
         public static final String QS_QUICKBAR_SCROLL_ENABLED = "qs_quickbar_scroll_enabled";
 
-        /**
-         * Dashboard columns in settings
+	 /**
+         * Dashboard portrait columns in settings
          * @hide
          */
-        public static final String DASHBOARD_COLUMNS = "dashboard_columns";
+        public static final String DASHBOARD_PORTRAIT_COLUMNS = "dashboard_portrait_columns";
+
+        /**
+         * Dashboard landscape columns in settings
+         * @hide
+         */
+        public static final String DASHBOARD_LANDSCAPE_COLUMNS = "dashboard_landscape_columns";
 
         /**
          * Settings to backup. This is here so that it's in the same place as the settings
