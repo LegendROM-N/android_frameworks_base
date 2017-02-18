@@ -82,4 +82,7 @@
     <!-- Screen record notification error title -->
     <string name="screenrecord_notif_error">Unable to record screen</string>
 
+    <string name="quick_settings_google_assist_label">Assist</string>
+    <string name="quick_settings_google_voice_assist_label">Voice assist</string>
+
 </resources>
