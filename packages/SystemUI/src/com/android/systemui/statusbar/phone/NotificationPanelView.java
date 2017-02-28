@@ -90,6 +90,7 @@ import com.android.systemui.statusbar.*;
 import cyanogenmod.providers.CMSettings;
 import cyanogenmod.weather.util.WeatherUtils;
 import com.android.internal.statusbar.IStatusBarService;
+import com.android.systemui.tuner.TunerService;
 
 import java.util.List;
 
@@ -99,7 +100,7 @@ public class NotificationPanelView extends PanelView implements
         ExpandableView.OnHeightChangedListener,
         View.OnClickListener, NotificationStackScrollLayout.OnOverscrollTopChangedListener,
         KeyguardAffordanceHelper.Callback, NotificationStackScrollLayout.OnEmptySpaceClickListener,
-        HeadsUpManager.OnHeadsUpChangedListener, WeatherController.Callback {
+        HeadsUpManager.OnHeadsUpChangedListener, WeatherController.Callback, TunerService.Tunable {
 
     private static final boolean DEBUG = false;
 
@@ -113,6 +114,13 @@ public class NotificationPanelView extends PanelView implements
     static final String COUNTER_PANEL_OPEN = "panel_open";
     static final String COUNTER_PANEL_OPEN_QS = "panel_open_qs";
     private static final String COUNTER_PANEL_OPEN_PEEK = "panel_open_peek";
+
+    private static final String STATUS_BAR_QUICK_QS_PULLDOWN =
+            "cmsystem:" + CMSettings.System.STATUS_BAR_QUICK_QS_PULLDOWN;
+    private static final String DOUBLE_TAP_SLEEP_GESTURE =
+            "cmsystem:" + CMSettings.System.DOUBLE_TAP_SLEEP_GESTURE;
+    private static final String LOCK_SCREEN_WEATHER_ENABLED =
+            "cmsecure:" + CMSettings.Secure.LOCK_SCREEN_WEATHER_ENABLED;
 
     private static final Rect mDummyDirtyRect = new Rect(0, 0, 1, 1);
 
@@ -484,6 +492,7 @@ public class NotificationPanelView extends PanelView implements
 
     public void InitTaskmanager() {
             mTaskManagerPanel = (LinearLayout) findViewById(R.id.task_manager_panel);
+        mKeyguardWeatherInfo = (TextView) mKeyguardStatusView.findViewById(R.id.weather_info);
     }
 
     @Override
@@ -506,6 +515,7 @@ public class NotificationPanelView extends PanelView implements
         mStatusBarHeaderHeight = getResources().getDimensionPixelSize(R.dimen.status_bar_header_height);
         mMaxFadeoutHeight = getResources().getDimensionPixelSize(
                 R.dimen.max_notification_fadeout_height);
+        mStatusBarHeaderHeight = getResources().getDimensionPixelSize(R.dimen.status_bar_header_height);
     }
 
     public void updateResources() {
@@ -1170,18 +1180,15 @@ public class NotificationPanelView extends PanelView implements
 
         final float w = getMeasuredWidth();
         final float x = event.getX();
-        float region = (w * (1.f/4.f)); // TODO overlay region fraction?
+        float region = w * 1.f / 4.f; // TODO overlay region fraction?
         boolean showQsOverride = false;
 
         switch (mOneFingerQuickSettingsIntercept) {
             case 1: // Right side pulldown
-                showQsOverride = isLayoutRtl() ? (x < region) : (w - region < x);
+                showQsOverride = isLayoutRtl() ? x < region : w - region < x;
                 break;
             case 2: // Left side pulldown
-                showQsOverride = isLayoutRtl() ? (w - region < x) : (x < region);
-                break;
-            case 3: // pull down anywhere
-                showQsOverride = true;
+                showQsOverride = isLayoutRtl() ? w - region < x : x < region;
                 break;
         }
         showQsOverride &= mStatusBarState == StatusBarState.SHADE;
@@ -1768,11 +1775,6 @@ public class NotificationPanelView extends PanelView implements
         boolean onHeader = useHeader && x >= mQsAutoReinflateContainer.getX()
                 && x <= mQsAutoReinflateContainer.getX() + mQsAutoReinflateContainer.getWidth()
                 && y >= header.getTop() && y <= header.getBottom();
-
-        final float w = getMeasuredWidth();
-        float region = (w * (1.f/3.f)); // TODO overlay region fraction?
-        final boolean showQsOverride = isLayoutRtl() ? (x < region) : (w - region < x)
-                        && mStatusBarState == StatusBarState.SHADE;
 
         if (mQsExpanded) {
             return onHeader || (yDiff < 0 && isInQsArea(x, y));

@@ -1168,8 +1168,6 @@ public class CarrierConfigManager {
         sDefaults.putBoolean(KEY_FORCE_IMEI_BOOL, false);
         sDefaults.putInt(KEY_CDMA_ROAMING_MODE_INT, CDMA_ROAMING_MODE_RADIO_DEFAULT);
 
-        sDefaults.putBoolean(KEY_MAP_ANONYMOUS_TO_RESTRICTED_BOOL, true);
-
         // Carrier Signalling Receivers
         sDefaults.putStringArray(KEY_SIGNAL_REDIRECTION_RECEIVER_STRING_ARRAY, null);
         sDefaults.putStringArray(KEY_SIGNAL_DCFAILURE_RECEIVER_STRING_ARRAY, null);
@@ -1194,6 +1192,7 @@ public class CarrierConfigManager {
         sDefaults.putStringArray(FILTERED_CNAP_NAMES_STRING_ARRAY, null);
         sDefaults.putBoolean(KEY_EDITABLE_WFC_ROAMING_MODE_BOOL, false);
         sDefaults.putBoolean(KEY_STK_DISABLE_LAUNCH_BROWSER_BOOL, false);
+        sDefaults.putBoolean(KEY_MAP_ANONYMOUS_TO_RESTRICTED_BOOL, true);
     }
 
     /**

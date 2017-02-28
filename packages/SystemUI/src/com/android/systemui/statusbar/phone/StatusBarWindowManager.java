@@ -516,8 +516,8 @@ public class StatusBarWindowManager implements RemoteInputController.Callback,
             default:
                 return;
         }
-	// Update the state
-	apply(mCurrentState);
+        // Update the state
+        apply(mCurrentState);
     }
 
     @Override

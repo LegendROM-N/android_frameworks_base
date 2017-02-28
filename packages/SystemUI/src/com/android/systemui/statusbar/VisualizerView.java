@@ -39,6 +39,9 @@ public class VisualizerView extends View implements Palette.PaletteAsyncListener
     private static final String TAG = VisualizerView.class.getSimpleName();
     private static final boolean DEBUG = false;
 
+    private static final String LOCKSCREEN_VISUALIZER_ENABLED =
+            "cmsecure:" + CMSettings.Secure.LOCKSCREEN_VISUALIZER_ENABLED;
+
     private Paint mPaint;
     private Visualizer mVisualizer;
     private ObjectAnimator mVisualizerColorAnimator;

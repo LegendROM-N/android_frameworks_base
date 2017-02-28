@@ -19,12 +19,6 @@
 -->
 <resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
 
-    <!-- Content description of the data connection type HSPA+ for accessibility (not shown on the screen). [CHAR LIMIT=NONE] -->
-    <string name="accessibility_data_connection_hspap">HSPA+</string>
-
-    <!-- Weather string format in expanded statusbar header -->
-    <string name="status_bar_expanded_header_weather_format"><xliff:g id="temp">%1$s</xliff:g> - <xliff:g id="condition">%2$s</xliff:g></string>
-
     <!-- Content description of the light brightness slider (not shown on the screen). [CHAR LIMIT=NONE] -->
     <string name="accessibility_notification_brightness">Light brightness</string>
 
@@ -99,12 +93,6 @@
     <!-- NavBar Tuner -->
     <string name="menu_ime_always_show">Menu / Keyboard Switcher (always show)</string>
     <string name="search">Search</string>
-
-    <!-- Wi-Fi hotspot label when enabled -->
-    <plurals name="wifi_hotspot_connected_clients_label">
-        <item quantity="one">%1$d client</item>
-        <item quantity="other">%1$d clients</item>
-    </plurals>
 
     <!-- Path data for portrait battery -->
     <string name="battery_portrait_path_full" translatable="false">M 5 2 H 19 V 21 H 5 V 2 Z</string>

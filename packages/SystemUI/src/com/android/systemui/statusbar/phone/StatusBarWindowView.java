@@ -70,11 +70,17 @@ import com.android.systemui.statusbar.DragDownHelper;
 import com.android.systemui.statusbar.StatusBarState;
 import com.android.systemui.statusbar.stack.NotificationStackScrollLayout;
 import cyanogenmod.providers.CMSettings;
+import com.android.systemui.tuner.TunerService;
+
+import cyanogenmod.providers.CMSettings;
 
 
-public class StatusBarWindowView extends FrameLayout {
+public class StatusBarWindowView extends FrameLayout implements TunerService.Tunable {
     public static final String TAG = "StatusBarWindowView";
     public static final boolean DEBUG = BaseStatusBar.DEBUG;
+
+    private static final String DOUBLE_TAP_SLEEP_GESTURE =
+            "cmsystem:" + CMSettings.System.DOUBLE_TAP_SLEEP_GESTURE;
 
     private DragDownHelper mDragDownHelper;
     private NotificationStackScrollLayout mStackScrollLayout;
@@ -204,6 +210,7 @@ public class StatusBarWindowView extends FrameLayout {
         super.onAttachedToWindow();
 
         mSettingsObserver.observe();
+        TunerService.get(mContext).addTunable(this, DOUBLE_TAP_SLEEP_GESTURE);
         mDoubleTapGesture = new GestureDetector(mContext, new GestureDetector.SimpleOnGestureListener() {
             @Override
             public boolean onDoubleTap(MotionEvent e) {
@@ -237,6 +244,7 @@ public class StatusBarWindowView extends FrameLayout {
     protected void onDetachedFromWindow() {
         super.onDetachedFromWindow();
         mSettingsObserver.unobserve();
+        TunerService.get(mContext).removeTunable(this);
     }
 
     @Override
@@ -762,6 +770,12 @@ public class StatusBarWindowView extends FrameLayout {
             mDoubleTapToSleepEnabled = CMSettings.System
                     .getInt(resolver, CMSettings.System.DOUBLE_TAP_SLEEP_GESTURE, 1) == 1;
         }
+    @Override
+    public void onTuningChanged(String key, String newValue) {
+        if (!DOUBLE_TAP_SLEEP_GESTURE.equals(key)) {
+            return;
+        }
+        mDoubleTapToSleepEnabled = newValue == null || Integer.parseInt(newValue) == 1;
     }
 }
 

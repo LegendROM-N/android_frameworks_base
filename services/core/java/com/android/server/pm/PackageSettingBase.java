@@ -381,7 +381,7 @@ abstract class PackageSettingBase extends SettingBase {
             String lastDisableAppCaller, ArraySet<String> enabledComponents,
             ArraySet<String> disabledComponents, boolean blockUninstall, int domainVerifState,
             int linkGeneration,
-            String[] resourceDirs, ArraySet<String> protectedComponents, ArraySet<String> visibleComponents) {
+            ArraySet<String> protectedComponents, ArraySet<String> visibleComponents) {
         PackageUserState state = modifyUserState(userId);
         state.ceDataInode = ceDataInode;
         state.enabled = enabled;

@@ -155,7 +155,7 @@ public final class ShutdownThread extends Thread {
         KeyguardManager km = (KeyguardManager) context.getSystemService(Context.KEYGUARD_SERVICE);
         boolean keyguardLocked = km.inKeyguardRestrictedInputMode() && km.isKeyguardSecure();
         boolean advancedRebootEnabled = CMSettings.Secure.getInt(context.getContentResolver(),
-                CMSettings.Secure.ADVANCED_REBOOT, 1) == 1;
+                CMSettings.Secure.ADVANCED_REBOOT, 0) == 1;
         boolean isPrimaryUser = UserHandle.getCallingUserId() == UserHandle.USER_OWNER;
 
         return advancedRebootEnabled && !keyguardLocked && isPrimaryUser;
@@ -613,8 +613,13 @@ public final class ShutdownThread extends Thread {
                     AlarmManager.POWER_OFF_ALARM_HANDLED);
         }
 
-        AlarmManager.writePowerOffAlarmFile(AlarmManager.POWER_OFF_ALARM_TIMEZONE_FILE,
-                SystemProperties.get("persist.sys.timezone"));
+        // If it is factory data reset, value in POWER_OFF_ALARM_TIMEZONE_FILE will be cleared.
+        if (mReboot && PowerManager.REBOOT_RECOVERY.equals(mReason)) {
+            AlarmManager.writePowerOffAlarmFile(AlarmManager.POWER_OFF_ALARM_TIMEZONE_FILE, "");
+        } else {
+            AlarmManager.writePowerOffAlarmFile(AlarmManager.POWER_OFF_ALARM_TIMEZONE_FILE,
+                    SystemProperties.get("persist.sys.timezone"));
+        }
         rebootOrShutdown(mContext, mReboot, mReason);
     }
 

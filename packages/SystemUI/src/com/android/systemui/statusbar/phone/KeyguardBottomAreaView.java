@@ -848,6 +848,11 @@ public class KeyguardBottomAreaView extends FrameLayout implements View.OnClickL
         updateLeftPreview();
     }
 
+    public void onKeyguardShowingChanged() {
+        updateLeftAffordance();
+        inflateCameraPreview();
+    }
+
     private String getIndexHint(LockscreenShortcutsHelper.Shortcuts shortcut) {
         if (mShortcutHelper.isTargetCustom(shortcut)) {
             boolean isRtl = getLayoutDirection() == LAYOUT_DIRECTION_RTL;
@@ -874,7 +879,6 @@ public class KeyguardBottomAreaView extends FrameLayout implements View.OnClickL
                 label = mContext.getString(R.string.voice_hint);
             } else {
                 label = mContext.getString(R.string.phone_hint);
-
             }
         }
         return label;
@@ -895,10 +899,5 @@ public class KeyguardBottomAreaView extends FrameLayout implements View.OnClickL
     @Override
     public void onChange() {
         updateCustomShortcuts();
-    }
-
-    public void onKeyguardShowingChanged() {
-        updateLeftAffordance();
-        inflateCameraPreview();
     }
 }

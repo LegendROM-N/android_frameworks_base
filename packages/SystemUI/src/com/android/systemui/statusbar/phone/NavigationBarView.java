@@ -295,7 +295,7 @@ public class NavigationBarView extends LinearLayout implements TunerService.Tuna
         mBackCarModeIcon = new BackButtonDrawable(
                 ctx.getDrawable(R.drawable.ic_sysbar_back_carmode));
         mBackLandCarModeIcon = mBackCarModeIcon;
-        mHomeCarModeIcon = ctx.getDrawable(R.drawable.ic_sysbar_home_carmode_pixel);
+        mHomeCarModeIcon = ctx.getDrawable(R.drawable.ic_sysbar_home_carmode);
     }
 
     private void updateIcons(Context ctx, Configuration oldConfig, Configuration newConfig) {
