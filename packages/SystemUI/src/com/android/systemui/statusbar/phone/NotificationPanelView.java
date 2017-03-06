@@ -90,7 +90,6 @@ import com.android.systemui.statusbar.*;
 import cyanogenmod.providers.CMSettings;
 import cyanogenmod.weather.util.WeatherUtils;
 import com.android.internal.statusbar.IStatusBarService;
-import com.android.systemui.tuner.TunerService;
 
 import java.util.List;
 
@@ -100,7 +99,7 @@ public class NotificationPanelView extends PanelView implements
         ExpandableView.OnHeightChangedListener,
         View.OnClickListener, NotificationStackScrollLayout.OnOverscrollTopChangedListener,
         KeyguardAffordanceHelper.Callback, NotificationStackScrollLayout.OnEmptySpaceClickListener,
-        HeadsUpManager.OnHeadsUpChangedListener, WeatherController.Callback, TunerService.Tunable {
+        HeadsUpManager.OnHeadsUpChangedListener, WeatherController.Callback {
 
     private static final boolean DEBUG = false;
 
@@ -1779,7 +1778,7 @@ public class NotificationPanelView extends PanelView implements
         if (mQsExpanded) {
             return onHeader || (yDiff < 0 && isInQsArea(x, y));
         } else {
-            return onHeader || showQsOverride;
+            return onHeader;
         }
     }
 

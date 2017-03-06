@@ -320,36 +320,6 @@ public final class Call {
         public static final int PROPERTY_IS_EXTERNAL_CALL = 0x00000040;
 
         /**
-         * Whether the call was forwarded from another party (GSM only)
-         * @hide
-         */
-        public static final int PROPERTY_WAS_FORWARDED = 0x00000080;
-
-        /**
-         * Whether the call is held remotely
-         * @hide
-         */
-        public static final int PROPERTY_HELD_REMOTELY = 0x00000100;
-
-        /**
-         * Whether the dialing state is waiting for the busy remote side
-         * @hide
-         */
-        public static final int PROPERTY_DIALING_IS_WAITING = 0x00000200;
-
-        /**
-         * Whether an additional call came in and was forwarded while the call was active
-         * @hide
-         */
-        public static final int PROPERTY_ADDITIONAL_CALL_FORWARDED = 0x00000400;
-
-        /**
-         * Whether incoming calls are barred at the remote side
-         * @hide
-         */
-        public static final int PROPERTY_REMOTE_INCOMING_CALLS_BARRED = 0x00000800;
-
-        /**
          * Indicates that the call has CDMA Enhanced Voice Privacy enabled.
          */
         public static final int PROPERTY_HAS_CDMA_VOICE_PRIVACY = 0x00000080;

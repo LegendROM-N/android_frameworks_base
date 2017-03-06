@@ -67,10 +67,6 @@ public class BatteryMeterView extends ImageView implements
                 com.android.internal.R.string.status_bar_battery);
         setImageDrawable(mDrawable);
 
-        // The BatteryMeterDrawable wants to use the clear xfermode,
-        // so use a separate layer to not make it clear the background with it.
-        setLayerType(View.LAYER_TYPE_HARDWARE, null);
-
         mContext = context;
         mFrameColor = frameColor;
     }
@@ -143,6 +139,19 @@ public class BatteryMeterView extends ImageView implements
         }
         restoreDrawableAttributes();
         requestLayout();
+    }
+
+    private void updateBoltColor() {
+        final int style = CMSettings.System.getInt(getContext().getContentResolver(), CMSettings.System.STATUS_BAR_BATTERY_STYLE, 0);
+        if (style == BatteryMeterDrawable.BATTERY_STYLE_TEXT || style == BatteryMeterDrawable.BATTERY_STYLE_HIDDEN) {
+            return;
+        } else {
+        mDrawable = new BatteryMeterDrawable(mContext, new Handler(), mFrameColor, style);
+        setImageDrawable(mDrawable);
+        setVisibility(View.VISIBLE);
+        restoreDrawableAttributes();
+        requestLayout();
+        }
     }
 
     private void restoreDrawableAttributes() {

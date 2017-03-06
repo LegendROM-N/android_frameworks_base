@@ -2021,20 +2021,6 @@ public class ConnectivityManager {
     }
 
     /**
-     * Get the list of Stations connected to Hotspot.
-     *
-     * @return a list of {@link WifiDevice} objects.
-     * {@hide}
-     */
-    public List<WifiDevice> getTetherConnectedSta() {
-        try {
-            return mService.getTetherConnectedSta();
-        } catch (RemoteException e) {
-            return null;
-        }
-    }
-
-    /**
      * Check if the device allows for tethering.  It may be disabled via
      * {@code ro.tether.denied} system property, Settings.TETHER_SUPPORTED or
      * due to device configuration.

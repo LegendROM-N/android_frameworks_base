@@ -70,12 +70,9 @@ import com.android.systemui.statusbar.DragDownHelper;
 import com.android.systemui.statusbar.StatusBarState;
 import com.android.systemui.statusbar.stack.NotificationStackScrollLayout;
 import cyanogenmod.providers.CMSettings;
-import com.android.systemui.tuner.TunerService;
-
-import cyanogenmod.providers.CMSettings;
 
 
-public class StatusBarWindowView extends FrameLayout implements TunerService.Tunable {
+public class StatusBarWindowView extends FrameLayout {
     public static final String TAG = "StatusBarWindowView";
     public static final boolean DEBUG = BaseStatusBar.DEBUG;
 
@@ -210,7 +207,6 @@ public class StatusBarWindowView extends FrameLayout implements TunerService.Tun
         super.onAttachedToWindow();
 
         mSettingsObserver.observe();
-        TunerService.get(mContext).addTunable(this, DOUBLE_TAP_SLEEP_GESTURE);
         mDoubleTapGesture = new GestureDetector(mContext, new GestureDetector.SimpleOnGestureListener() {
             @Override
             public boolean onDoubleTap(MotionEvent e) {
@@ -244,7 +240,6 @@ public class StatusBarWindowView extends FrameLayout implements TunerService.Tun
     protected void onDetachedFromWindow() {
         super.onDetachedFromWindow();
         mSettingsObserver.unobserve();
-        TunerService.get(mContext).removeTunable(this);
     }
 
     @Override
@@ -770,12 +765,6 @@ public class StatusBarWindowView extends FrameLayout implements TunerService.Tun
             mDoubleTapToSleepEnabled = CMSettings.System
                     .getInt(resolver, CMSettings.System.DOUBLE_TAP_SLEEP_GESTURE, 1) == 1;
         }
-    @Override
-    public void onTuningChanged(String key, String newValue) {
-        if (!DOUBLE_TAP_SLEEP_GESTURE.equals(key)) {
-            return;
-        }
-        mDoubleTapToSleepEnabled = newValue == null || Integer.parseInt(newValue) == 1;
     }
 }
 

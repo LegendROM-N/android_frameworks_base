@@ -179,16 +179,16 @@ public class ScheduleConditionProvider extends SystemConditionProviderService {
                         cal.maybeSetNextAlarm(now, nextUserAlarmTime);
                     }
                 }
-            }
-            if (cal != null) {
-                final long nextChangeTime = cal.getNextChangeTime(now);
-                if (nextChangeTime > 0 && nextChangeTime > now) {
-                    if (mNextAlarmTime == 0 || nextChangeTime < mNextAlarmTime) {
-                        mNextAlarmTime = nextChangeTime;
+                if (cal != null) {
+                    final long nextChangeTime = cal.getNextChangeTime(now);
+                    if (nextChangeTime > 0 && nextChangeTime > now) {
+                        if (mNextAlarmTime == 0 || nextChangeTime < mNextAlarmTime) {
+                            mNextAlarmTime = nextChangeTime;
+                        }
                     }
                 }
             }
-        }
+	}
         updateAlarm(now, mNextAlarmTime);
     }
 
@@ -319,14 +319,16 @@ public class ScheduleConditionProvider extends SystemConditionProviderService {
         @Override
         public void onReceive(Context context, Intent intent) {
             if (DEBUG) Slog.d(TAG, "onReceive " + intent.getAction());
-            if (Intent.ACTION_TIMEZONE_CHANGED.equals(intent.getAction())) {
-                for (Uri conditionId : mSubscriptions.keySet()) {
-                    final ScheduleCalendar cal = mSubscriptions.get(conditionId);
-                    if (cal != null) {
-                        cal.setTimeZone(Calendar.getInstance().getTimeZone());
+	    synchronized (mSubscriptions) {
+            	if (Intent.ACTION_TIMEZONE_CHANGED.equals(intent.getAction())) {
+                    for (Uri conditionId : mSubscriptions.keySet()) {
+                        final ScheduleCalendar cal = mSubscriptions.get(conditionId);
+                        if (cal != null) {
+                            cal.setTimeZone(Calendar.getInstance().getTimeZone());
+                        }
                     }
                 }
-            }
+	    }
             evaluateSubscriptions();
         }
     };

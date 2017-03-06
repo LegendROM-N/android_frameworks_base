@@ -552,7 +552,6 @@ public class PackageManagerService extends IPackageManager.Stub {
     final boolean mIsPreNUpgrade;
     final boolean mIsAlarmBoot;
     final boolean mIsPreNMR1Upgrade;
-    final boolean mIsAlarmBoot;
 
     @GuardedBy("mPackages")
     private boolean mDexOptDialogShown;
