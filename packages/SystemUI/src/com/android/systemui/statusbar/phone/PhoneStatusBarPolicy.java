@@ -93,7 +93,6 @@ public class PhoneStatusBarPolicy implements Callback, RotationLockController.Ro
     private StatusBarKeyguardViewManager mStatusBarKeyguardViewManager;
     private final SuController mSuController;
     private boolean mSuIndicatorVisible;
-    private boolean mShowBluetoothBattery;
 
     // Assume it's all good unless we hear otherwise.  We don't always seem
     // to get broadcasts that it *is* there.

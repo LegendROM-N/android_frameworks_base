@@ -70,7 +70,19 @@ public class ScreenshotTile extends QSTile<QSTile.BooleanState> {
         } catch (InterruptedException ie) {
              // Do nothing
         }
-        takeScreenshot();
+        takeScreenshot(1);
+    }
+
+    @Override
+    public void handleLongClick() {
+        mHost.collapsePanels();
+        /* wait for the panel to close */
+        try {
+             Thread.sleep(mScreenshotDelay);
+        } catch (InterruptedException ie) {
+             // Do nothing
+        }
+        takeScreenshot(2);
     }
 
     @Override
@@ -107,7 +119,7 @@ public class ScreenshotTile extends QSTile<QSTile.BooleanState> {
         }
     };
 
-    private void takeScreenshot() {
+    private void takeScreenshot(int type) {
         synchronized (mScreenshotLock) {
             if (mScreenshotConnection != null) {
                 return;
@@ -123,7 +135,7 @@ public class ScreenshotTile extends QSTile<QSTile.BooleanState> {
                         }
 
                         Messenger messenger = new Messenger(service);
-                        Message msg = Message.obtain(null, 1);
+                        Message msg = Message.obtain(null, type);
                         final ServiceConnection myConn = this;
                         Handler h = new Handler(mHandler.getLooper()) {
                             @Override
