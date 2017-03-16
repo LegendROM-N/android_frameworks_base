@@ -3881,6 +3881,12 @@ public final class Settings {
          */
         public static final String SYSTEMUI_RECENTS_MEM_DISPLAY = "systemui_recents_mem_display";
 
+        /**
+         * Recents Memory Bar color
+         * @hide
+         */
+        public static final String RECENTS_MEMBAR_COLOR = "recents_membar_color";
+
 	/**
          * Enable built in CAF task manager
          * @hide

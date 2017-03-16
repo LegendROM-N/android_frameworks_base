@@ -34,6 +34,7 @@ import android.graphics.Outline;
 import android.graphics.Rect;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
+import android.graphics.PorterDuff.Mode;
 import android.net.Uri;
 import android.os.UserHandle;
 import android.os.Handler;
@@ -940,6 +941,8 @@ public class RecentsView extends FrameLayout {
              ContentResolver resolver = mContext.getContentResolver();
              resolver.registerContentObserver(Settings.System.getUriFor(
                      Settings.System.SHOW_CLEAR_ALL_RECENTS), false, this, UserHandle.USER_ALL);
+	     resolver.registerContentObserver(Settings.System.getUriFor(
+		     Settings.System.RECENTS_MEMBAR_COLOR), false, this, UserHandle.USER_ALL);
              update();
          }
 
@@ -950,6 +953,9 @@ public class RecentsView extends FrameLayout {
 
          @Override
          public void onChange(boolean selfChange, Uri uri) {
+	 if (uri.equals(Settings.System.getUriFor(
+		 Settings.System.RECENTS_MEMBAR_COLOR))) {
+	 }
              update();
          }
 
@@ -980,8 +986,12 @@ public class RecentsView extends FrameLayout {
         if (mMemText.getVisibility() == View.GONE
                 || mMemBar.getVisibility() == View.GONE) return;
 
+        int mMemBarColor = Settings.System.getInt(mContext.getContentResolver(),
+		Settings.System.RECENTS_MEMBAR_COLOR, 0xFF4285F4);
+
         MemoryInfo memInfo = new MemoryInfo();
         mAm.getMemoryInfo(memInfo);
+        mMemBar.getProgressDrawable().setColorFilter(mMemBarColor, Mode.MULTIPLY);
             int available = (int)(memInfo.availMem / 1048576L);
             int max = (int)(getTotalMemory() / 1048576L);
             mMemText.setText(String.format(getResources().getString(R.string.recents_free_ram)) + ": " + String.valueOf(available) + "MB");
