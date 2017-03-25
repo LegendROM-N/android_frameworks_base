@@ -55,11 +55,11 @@ import com.android.systemui.qs.tiles.GoogleAssistTile;
 import com.android.systemui.qs.tiles.GoogleVoiceAssistTile;
 import com.android.systemui.qs.tiles.HotspotTile;
 import com.android.systemui.qs.tiles.ImeTile;
-import com.android.systemui.qs.tiles.NfcTile;
 import com.android.systemui.qs.tiles.IntentTile;
 import com.android.systemui.qs.tiles.LocationTile;
 import com.android.systemui.qs.tiles.MusicTile;
 import com.android.systemui.qs.tiles.RebootTile;
+import com.android.systemui.qs.tiles.NfcTile;
 import com.android.systemui.qs.tiles.NightDisplayTile;
 import com.android.systemui.qs.tiles.RotationLockTile;
 import com.android.systemui.qs.tiles.SoundTile;
@@ -455,10 +455,10 @@ public class QSTileHost implements QSTile.Host, Tunable {
 	else if (tileSpec.equals("usb_tether")) return new UsbTetherTile(this);
 	else if (tileSpec.equals("music")) return new MusicTile(this);
 	else if (tileSpec.equals("ime")) return new ImeTile(this);
-	else if (tileSpec.equals("nfc")) return new NfcTile(this);
         else if (tileSpec.equals("night")) return new NightDisplayTile(this);
         else if (tileSpec.equals("assist")) return new GoogleAssistTile(this);
         else if (tileSpec.equals("voiceassist")) return new GoogleVoiceAssistTile(this);
+        else if (tileSpec.equals("nfc")) return new NfcTile(this);
         // Intent tiles.
         else if (tileSpec.startsWith(IntentTile.PREFIX)) return IntentTile.create(this,tileSpec);
         else if (tileSpec.startsWith(CustomTile.PREFIX)) return CustomTile.create(this,tileSpec);

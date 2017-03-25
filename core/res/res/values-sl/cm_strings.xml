@@ -136,4 +136,11 @@
   <string name="lock_to_app_toast_no_navbar">Da odpnete ta zaslon, se dotaknite in pridržite gumb Nazaj.</string>
   <!-- Message to show the user when their vendor image doesn't match the build's fingerprint. -->
   <string name="lineage_system_error_manufacturer">Zaznano je bilo neujemanje odtisa dobavitelja. Običajno to pomeni, da je odtis dobavitelja zastarel. Prepričajte se, da se odtis dobavitelja ujema s/z <xliff:g id="fingerprint">%1$s</xliff:g>.</string>
+  <!-- Single hand mode -->
+  <string name="singlehandmode_click_hint_message">Dotaknite se izven zaslona za izhod iz enoročnega načina</string>
+  <!-- Strings for tethered notification -->
+  <!-- Shown when the device is tethered -->
+  <string name="tethered_notification_no_device_message">Nobene naprave ni povezane</string>
+  <string name="tethered_notification_one_device_message"><xliff:g id="count">%1$s</xliff:g> povezana naprava</string>
+  <string name="tethered_notification_multi_device_message"><xliff:g id="count">%1$s</xliff:g> povezanih naprav</string>
 </resources>
