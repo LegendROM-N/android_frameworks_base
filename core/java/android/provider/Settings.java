@@ -5465,14 +5465,6 @@ public final class Settings {
         public static final String LOCK_SCREEN_ALLOW_PRIVATE_NOTIFICATIONS =
                 "lock_screen_allow_private_notifications";
 
-
-        /**
-         * Separate password for encryption and the lockscreen.
-          * @hide
-         */
-        public static final String LOCK_SEPARATE_ENCRYPTION_PASSWORD =
-                "lock_separate_encryption_password";
-
         /**
          * When set by a user, allows notification remote input atop a securely locked screen
          * without having to unlock
@@ -6930,6 +6922,12 @@ public final class Settings {
          * @hide
          */
         public static final String QQS_COUNT = "sysui_qqs_count";
+
+        /**
+         * Force authorize Substratum (or equivalent) frontend calling packages by Masquerade
+         * @hide
+         */
+        public static final String FORCE_AUTHORIZE_SUBSTRATUM_PACKAGES = "force_authorize_substratum_packages";
 
         /**
          * This are the settings to be backed up.
