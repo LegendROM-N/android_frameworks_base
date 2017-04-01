@@ -311,7 +311,7 @@ public class NavigationBarView extends LinearLayout implements TunerService.Tuna
             mBackIcon = new BackButtonDrawable(ctx.getDrawable(R.drawable.ic_sysbar_back));
             mBackLandIcon = mBackIcon;
 
-            mHomeDefaultIcon = ctx.getDrawable(R.drawable.ic_sysbar_home_pixel);
+            mHomeDefaultIcon = ctx.getDrawable(R.drawable.ic_sysbar_home);
             mRecentIcon = ctx.getDrawable(R.drawable.ic_sysbar_recent);
             mMenuIcon = ctx.getDrawable(R.drawable.ic_sysbar_menu);
             mImeIcon = ctx.getDrawable(R.drawable.ic_ime_switcher_default);
