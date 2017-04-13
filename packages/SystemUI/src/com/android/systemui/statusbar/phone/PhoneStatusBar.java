@@ -220,7 +220,6 @@ import com.android.systemui.statusbar.stack.NotificationStackScrollLayout
         .OnChildLocationsChangedListener;
 import com.android.systemui.statusbar.stack.StackStateAnimator;
 import com.android.systemui.statusbar.NotificationBackgroundView;
-import com.android.systemui.statusbar.stack.StackViewState;
 import com.android.systemui.tuner.TunerService;
 import com.android.systemui.volume.VolumeComponent;
 
@@ -240,7 +239,7 @@ import static android.service.notification.NotificationListenerService.Ranking.i
 
 public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
         DragDownHelper.DragDownCallback, ActivityStarter, OnUnlockMethodChangedListener,
-        OnHeadsUpChangedListener, VisualStabilityManager.Callback, TunerService.Tunable {
+        OnHeadsUpChangedListener, VisualStabilityManager.Callback {
     static final String TAG = "PhoneStatusBar";
     public static final boolean DEBUG = BaseStatusBar.DEBUG;
     public static final boolean SPEW = false;
@@ -1048,10 +1047,6 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
 
         SettingsObserver observer = new SettingsObserver(mHandler);
         observer.observe();
-        TunerService.get(mContext).addTunable(this,
-                SCREEN_BRIGHTNESS_MODE,
-                NAVBAR_LEFT_IN_LANDSCAPE,
-                STATUS_BAR_BRIGHTNESS_CONTROL);
 
         // Lastly, call to the icon policy to install/update all the icons.
         mIconPolicy = new PhoneStatusBarPolicy(mContext, mIconController, mCastController,
@@ -2424,7 +2419,7 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
     /**
      * Return whether there are any clearable notifications
      */
-    private boolean hasActiveClearableNotifications() {
+    protected boolean hasActiveClearableNotifications() {
         int childCount = mStackScroller.getChildCount();
         for (int i = 0; i < childCount; i++) {
             View child = mStackScroller.getChildAt(i);
@@ -2485,10 +2480,6 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
 
     protected boolean hasActiveOngoingNotifications() {
         return mNotificationData.hasActiveOngoingNotifications();
-    }
-
-    protected boolean hasActiveClearableNotifications() {
-        return mNotificationData.hasActiveClearableNotifications();
     }
 
     @Override
@@ -5885,28 +5876,6 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
                         break;
                 }
             }
-        }
-    }
-
-    @Override
-    public void onTuningChanged(String key, String newValue) {
-        switch (key) {
-            case SCREEN_BRIGHTNESS_MODE:
-                mAutomaticBrightness = newValue != null && Integer.parseInt(newValue)
-                        == Settings.System.SCREEN_BRIGHTNESS_MODE_AUTOMATIC;
-                break;
-            case NAVBAR_LEFT_IN_LANDSCAPE:
-                if (mNavigationBarView != null) {
-                    final boolean navLeftInLandscape = newValue != null &&
-                            Integer.parseInt(newValue) == 1;
-                    mNavigationBarView.setLeftInLandscape(navLeftInLandscape);
-                }
-                break;
-            case STATUS_BAR_BRIGHTNESS_CONTROL:
-                mBrightnessControl = newValue != null && Integer.parseInt(newValue) == 1;
-                break;
-            default:
-                break;
         }
     }
 }
