@@ -767,12 +767,12 @@ public class PhoneWindowManager implements WindowManagerPolicy {
     // (See Settings.Secure.INCALL_POWER_BUTTON_BEHAVIOR.)
     int mIncallPowerBehavior;
 
+    // Behavior of Back button while in-call and screen on
+    int mIncallBackBehavior;
+
     // Behavior of HOME button during an incoming call.
     // (See CMSettings.Secure.RING_HOME_BUTTON_BEHAVIOR.)
     private int mRingHomeBehavior;
-
-    // Behavior of Back button while in-call and screen on
-    int mIncallBackBehavior;
 
     Display mDisplay;
 
@@ -3251,11 +3251,6 @@ public class PhoneWindowManager implements WindowManagerPolicy {
     @Override
     public WindowState getWinShowWhenLockedLw() {
         return mWinShowWhenLocked;
-    }
-
-    @Override
-    public WindowState getWinKeyguardPanelLw() {
-        return mKeyguardPanel;
     }
 
     /** {@inheritDoc} */
