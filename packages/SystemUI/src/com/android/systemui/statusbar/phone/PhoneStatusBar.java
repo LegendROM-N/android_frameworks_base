@@ -618,6 +618,15 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
 	    resolver.registerContentObserver(Settings.System.getUriFor(
                 Settings.System.STATUS_BAR_SHOW_TICKER),
                 false, this, UserHandle.USER_ALL);
+            resolver.registerContentObserver(Settings.System.getUriFor(
+                Settings.System.HEADER_WEATHER_ENABLED),
+                false, this, UserHandle.USER_ALL);
+            resolver.registerContentObserver(Settings.System.getUriFor(
+                Settings.System.HEADER_WEATHER_IMAGE_ENABLED),
+                false, this, UserHandle.USER_ALL);
+            resolver.registerContentObserver(Settings.System.getUriFor(
+                Settings.System.OMNIJAWS_WEATHER_ICON_PACK),
+                false, this, UserHandle.USER_ALL);
             update();
         }
 
@@ -658,8 +667,17 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
                             Settings.System.STATUS_BAR_SHOW_TICKER,
                             0, UserHandle.USER_CURRENT);
                 initTickerView();
-	    }
-	    update();
+            } else if (uri.equals(Settings.System.getUriFor(
+                    Settings.System.HEADER_WEATHER_ENABLED))
+                    || uri.equals(Settings.System.getUriFor(
+                    Settings.System.HEADER_WEATHER_IMAGE_ENABLED))
+                    || uri.equals(Settings.System.getUriFor(
+                    Settings.System.OMNIJAWS_WEATHER_ICON_PACK))) {
+                mHeader.updateVisibilities();
+                mHeader.queryAndUpdateWeather();
+            }
+
+            update();
         }
 
         @Override

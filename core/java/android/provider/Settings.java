@@ -4110,6 +4110,19 @@ public final class Settings {
          */
         public static final String STATUS_BAR_SHOW_WEATHER_TEMP = "status_bar_show_weather_temp";
 
+	/**
+         * Whether to show or hide Weather panel in expanded header
+         * @hide
+         */
+        public static final String HEADER_WEATHER_ENABLED = "header_weather_enabled";
+
+
+        /**
+         * Whether to show or hide Weather panel image in expanded header
+         * @hide
+         */
+        public static final String HEADER_WEATHER_IMAGE_ENABLED = "header_weather_image_enabled";
+
         /**
          * Settings to backup. This is here so that it's in the same place as the settings
          * keys and easy to update.

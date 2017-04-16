@@ -55,6 +55,7 @@ import com.android.systemui.FontSizeUtils;
 import com.android.systemui.R;
 import com.android.systemui.cm.UserContentObserver;
 import com.android.systemui.Legend.StatusBarHeaderMachine;
+import com.android.systemui.omni.OmniJawsClient;
 import com.android.systemui.qs.QSPanel;
 import com.android.systemui.qs.QSPanel.Callback;
 import com.android.systemui.qs.QuickQSPanel;
@@ -73,7 +74,7 @@ import com.android.systemui.statusbar.policy.WeatherController;
 import com.android.systemui.tuner.TunerService;
 
 public class QuickStatusBarHeader extends BaseStatusBarHeader implements
-        NextAlarmChangeCallback, OnClickListener, OnLongClickListener, OnUserInfoChangedListener,
+        NextAlarmChangeCallback, OnClickListener, OmniJawsClient.OmniJawsObserver, OnLongClickListener, OnUserInfoChangedListener,
 	StatusBarHeaderMachine.IStatusBarHeaderMachineObserver, EmergencyListener, SignalCallback {
 
     private static final String TAG = "QuickStatusBarHeader";
@@ -134,6 +135,15 @@ public class QuickStatusBarHeader extends BaseStatusBarHeader implements
     private SparseBooleanArray mRoamingsBySubId = new SparseBooleanArray();
     private boolean mIsRoaming;
 
+    //Weather info
+    private LinearLayout mWeatherContainer;
+    private ImageView mWeatherimage;
+    private ImageView mNoWeatherimage;
+    private TextView mWeatherLine1, mWeatherLine2;
+    private OmniJawsClient mWeatherClient;
+    private OmniJawsClient.WeatherInfo mWeatherData;
+    private boolean mWeatherEnabled;
+
     public QuickStatusBarHeader(Context context, AttributeSet attrs) {
         super(context, attrs);
     }
@@ -171,6 +181,15 @@ public class QuickStatusBarHeader extends BaseStatusBarHeader implements
         mSettingsContainer = findViewById(R.id.settings_button_container);
         mSettingsButton.setOnClickListener(this);
 	mSettingsButton.setOnLongClickListener(this);
+
+        mWeatherClient = new OmniJawsClient(mContext);
+        mWeatherEnabled = mWeatherClient.isOmniJawsEnabled();
+        mWeatherContainer = (LinearLayout) findViewById(R.id.weather_container);
+        mWeatherimage = (ImageView) findViewById(R.id.weather_image);
+        mNoWeatherimage = (ImageView) findViewById(R.id.no_weather_image);
+        mWeatherLine1 = (TextView) findViewById(R.id.weather_line_1);
+        mWeatherLine2 = (TextView) findViewById(R.id.weather_line_2);
+        queryAndUpdateWeather();
 
         mAlarmStatusCollapsed = findViewById(R.id.alarm_status_collapsed);
         mAlarmStatusCollapsed.setOnClickListener(this);
@@ -235,6 +254,10 @@ public class QuickStatusBarHeader extends BaseStatusBarHeader implements
                 .addFloat(mEdit, "alpha", 0, 1)
                 .addFloat(mMultiUserSwitch, "alpha", 0, 1)
                 .addFloat(mTaskManagerButton, "alpha", 0, 1)
+                .addFloat(mWeatherLine1, "alpha", 0, 1)
+                .addFloat(mWeatherLine2, "alpha", 0, 1)
+                .addFloat(mWeatherimage, "alpha", 0, 1)
+                .addFloat(mNoWeatherimage, "alpha", 0, 1)
                 .build();
 
         final boolean isRtl = isLayoutRtl();
@@ -304,6 +327,8 @@ public class QuickStatusBarHeader extends BaseStatusBarHeader implements
         setListening(false);
         mHost.getUserInfoController().remListener(this);
         mHost.getNetworkController().removeEmergencyListener(this);
+        mWeatherClient.removeObserver(this);
+        mWeatherClient.cleanupObserver();
         super.onDetachedFromWindow();
     }
 
@@ -342,6 +367,7 @@ public class QuickStatusBarHeader extends BaseStatusBarHeader implements
         final boolean isDemo = UserManager.isDeviceInDemoMode(mContext);
         mMultiUserSwitch.setVisibility(mExpanded && mMultiUserSwitch.hasMultipleUsers() && !isDemo
                 ? View.VISIBLE : View.INVISIBLE);
+	mWeatherContainer.setVisibility(mExpanded && isWeatherShown() ? View.VISIBLE : View.GONE);
         mEdit.setVisibility(isDemo || !mExpanded ? View.INVISIBLE : View.VISIBLE);
     }
 
@@ -356,6 +382,50 @@ public class QuickStatusBarHeader extends BaseStatusBarHeader implements
         if (mExpandIndicator != null) {
         mExpandIndicator.setVisibility(View.GONE);
         }
+    }
+
+    @Override
+    public void weatherUpdated() {
+        queryAndUpdateWeather();
+    }
+
+    @Override
+    public void queryAndUpdateWeather() {
+        try {
+                updateImageVisibility();
+                if (mWeatherEnabled && isWeatherShown()) {
+                    mWeatherClient.queryWeather();
+                    mWeatherData = mWeatherClient.getWeatherInfo();
+                    mWeatherLine2.setText(mWeatherData.city);
+                    mWeatherimage.setImageDrawable(
+                         mWeatherClient.getWeatherConditionImage(mWeatherData.conditionCode));
+                    mWeatherLine1.setText(mWeatherData.temp + mWeatherData.tempUnits);
+                    mNoWeatherimage.setVisibility(View.GONE);
+                } else {
+                    mWeatherLine2.setText(null);
+                    mWeatherLine1.setText(null);
+                    mWeatherimage.setVisibility(View.GONE);
+                    if(isWeatherShown()) {
+                       mNoWeatherimage.setVisibility(View.VISIBLE);
+                    } else {
+                       mNoWeatherimage.setVisibility(View.GONE);
+                    }
+                }
+          } catch(Exception e) {
+            // Do nothing
+       }
+    }
+
+    public void updateImageVisibility() {
+          mWeatherimage.setVisibility(isWeatherImageShown() && isWeatherShown() ? View.VISIBLE : View.GONE);
+          mNoWeatherimage.setVisibility(mExpanded && isWeatherShown() ? View.VISIBLE : View.GONE);
+    }
+
+    @Override
+    protected void onAttachedToWindow() {
+        super.onAttachedToWindow();
+        mWeatherClient.addObserver(this);
+        queryAndUpdateWeather();
     }
 
     private void updateDateTimePosition() {
@@ -552,6 +622,12 @@ public class QuickStatusBarHeader extends BaseStatusBarHeader implements
         mMultiUserAvatar.setImageDrawable(picture);
     }
 
+    @Override
+    public void weatherError(int errorReason) {
+       // not used
+    }
+
+    @Override
     public void updateSettings() {
         if (mQsPanel != null) {
 	    mQsPanel.updateSettings();
@@ -665,5 +741,15 @@ public class QuickStatusBarHeader extends BaseStatusBarHeader implements
         LinearLayout.LayoutParams p = (LinearLayout.LayoutParams) mBackgroundImage.getLayoutParams();
         p.height = getExpandedHeight();
         mBackgroundImage.setLayoutParams(p);
+    }
+
+    public boolean isWeatherShown() {
+        return Settings.System.getInt(mContext.getContentResolver(),
+            Settings.System.HEADER_WEATHER_ENABLED, 0) == 1;
+    }
+
+    public boolean isWeatherImageShown() {
+        return Settings.System.getInt(mContext.getContentResolver(),
+            Settings.System.HEADER_WEATHER_IMAGE_ENABLED, 0) == 1;
     }
 }

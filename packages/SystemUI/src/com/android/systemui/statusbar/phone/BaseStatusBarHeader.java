@@ -54,4 +54,6 @@ public abstract class BaseStatusBarHeader extends RelativeLayout implements
     public abstract void starttmactivity();
     public abstract void updateSettings();
     public abstract void onClosingFinished();
+    public abstract void updateVisibilities();
+    public abstract void queryAndUpdateWeather();
 }
