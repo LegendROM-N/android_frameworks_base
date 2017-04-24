@@ -882,9 +882,6 @@ public class PhoneWindowManager implements WindowManagerPolicy {
             }
             if (wasDeviceInPocket != mIsDeviceInPocket) {
                 handleDevicePocketStateChanged();
-                if (mKeyHandler != null) {
-                    mKeyHandler.setIsInPocket(mIsDeviceInPocket);
-                }
             }
         }
 
@@ -1414,14 +1411,15 @@ public class PhoneWindowManager implements WindowManagerPolicy {
                 mHandler.post(mHiddenNavPanic);
             }
 
-        // Latch power key state to detect screenshot chord.
-        if (interactive && !mPowerKeyTriggered
+            // Latch power key state to detect screenshot chord.
+            if (interactive && !mPowerKeyTriggered
                 && (event.getFlags() & KeyEvent.FLAG_FALLBACK) == 0) {
-            mPowerKeyTriggered = true;
-            mPowerKeyTime = event.getDownTime();
-            interceptScreenshotChord();
-            interceptScreenrecordChord();
-        }
+                mPowerKeyTriggered = true;
+                mPowerKeyTime = event.getDownTime();
+                interceptScreenshotChord();
+                interceptScreenrecordChord();
+            }
+     	}
 
         // Stop ringing or end call if configured to do so when power is pressed.
         TelecomManager telecomManager = getTelecommService();
@@ -1487,8 +1485,6 @@ public class PhoneWindowManager implements WindowManagerPolicy {
                             ViewConfiguration.get(mContext).getDeviceGlobalActionKeyTimeout());
                     mBeganFromNonInteractive = true;
                 } else {
-                    wakeUpFromPowerKey(event.getDownTime());
-
                     final int maxCount = getMaxMultiPressPowerCount();
 
                     if (maxCount <= 1) {
@@ -1704,15 +1700,15 @@ public class PhoneWindowManager implements WindowManagerPolicy {
                 sendCloseSystemWindows(SYSTEM_DIALOG_REASON_GLOBAL_ACTIONS);
                 mWindowManagerFuncs.shutdown(behavior == LONG_PRESS_POWER_SHUT_OFF);
                 break;
-           }
-        case LONG_PRESS_POWER_HIDE_POCKET_LOCK:
-            mPowerKeyHandled = true;
-            if (!performHapticFeedbackLw(null, HapticFeedbackConstants.LONG_PRESS, false)) {
-                performAuditoryFeedbackForAccessibilityIfNeed();
-            }
-            hidePocketLock(true);
-            mPocketManager.setListeningExternal(false);
-            break;
+            case LONG_PRESS_POWER_HIDE_POCKET_LOCK:
+                mPowerKeyHandled = true;
+                if (!performHapticFeedbackLw(null, HapticFeedbackConstants.LONG_PRESS, false)) {
+                     performAuditoryFeedbackForAccessibilityIfNeed();
+                }
+                hidePocketLock(true);
+                mPocketManager.setListeningExternal(false);
+                break;
+	   }
         } else if (mTorchEnabled && !isScreenOn()) {
            try {
                mCameraManager.setTorchMode(getCameraId(), true);
@@ -6718,15 +6714,15 @@ public class PhoneWindowManager implements WindowManagerPolicy {
                                                 isKeyguardShowingAndNotOccluded() :
                                                 mKeyguardDelegate.isShowing()));
 
+	if (mANBIHandler != null && mANBIEnabled && mANBIHandler.isScreenTouched()
+                && !navBarKey && (appSwitchKey || homeKey || menuKey || backKey)) {
+            return 0;
+        }
+
         if (DEBUG_INPUT) {
             Log.d(TAG, "interceptKeyTq keycode=" + keyCode
                     + " interactive=" + interactive + " keyguardActive=" + keyguardActive
                     + " policyFlags=" + Integer.toHexString(policyFlags));
-        }
-
-        if (mANBIHandler != null && mANBIEnabled && mANBIHandler.isScreenTouched()
-                && !navBarKey && (appSwitchKey || homeKey || menuKey || backKey)) {
-            return 0; 
         }
 
         // Pre-basic policy based on interactive and pocket lock state.
@@ -8348,9 +8344,7 @@ public class PhoneWindowManager implements WindowManagerPolicy {
         // CMHardwareService to be up and running
         mSettingsObserver.observe();
 
-        if (mDeviceHardwareKeys > 0) {
-            mANBIHandler = new ANBIHandler(mContext);
-        }
+	mANBIHandler = new ANBIHandler(mContext);
 
         readCameraLensCoverState();
         updateUiMode();
