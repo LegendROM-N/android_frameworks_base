@@ -19,6 +19,7 @@ package com.android.keyguard;
 import android.app.ActivityManager;
 import android.app.AlarmManager;
 import android.content.Context;
+import android.content.ContentResolver;
 import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.database.ContentObserver;
@@ -38,6 +39,8 @@ import android.widget.GridLayout;
 import android.widget.ImageView;
 import android.widget.TextClock;
 import android.widget.TextView;
+
+import com.android.internal.util.Legend.OmniJawsClient;
 
 import com.android.internal.widget.LockPatternUtils;
 
@@ -267,6 +270,11 @@ public class KeyguardStatusView extends GridLayout implements
         return info;
     }
 
+    @Override
+    public void weatherError(int errorReason) {
+       // not used
+    }
+    
     @Override
     public void weatherUpdated() {
         queryAndUpdateWeather();

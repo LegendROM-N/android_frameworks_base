@@ -399,7 +399,6 @@ public class NotificationPanelView extends PanelView implements
             mBlurredView.setVisibility(View.INVISIBLE);
 
             handleQuickSettingsBackround();
-	    mKeyguardWeatherInfo = (TextView) mKeyguardStatusView.findViewById(R.id.weather_info);
     }
 
     private static void handleQuickSettingsBackround() {
@@ -493,7 +492,6 @@ public class NotificationPanelView extends PanelView implements
 
     public void InitTaskmanager() {
             mTaskManagerPanel = (LinearLayout) findViewById(R.id.task_manager_panel);
-        mKeyguardWeatherInfo = (TextView) mKeyguardStatusView.findViewById(R.id.weather_info);
     }
 
     @Override
