@@ -50,5 +50,7 @@
     <!-- Recents Memory Bar color -->
     <color name="recents_membar_color">@*android:color/accent_device_default_light</color>
     <color name="recents_memory_text_color">@android:color/white</color>
+    <color name="recents_memmory_progress_overall">@*android:color/resize_shadow_start_color</color>
+    <color name="recents_memmory_progress_free">@*android:color/accent_device_default_light</color>
 
 </resources>
