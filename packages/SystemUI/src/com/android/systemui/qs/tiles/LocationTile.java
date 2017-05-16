@@ -27,8 +27,6 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
-import com.android.internal.logging.MetricsLogger;
-import com.android.internal.logging.MetricsProto.MetricsEvent;
 import com.android.systemui.R;
 import com.android.systemui.qs.QSDetailItems;
 import com.android.systemui.qs.QSDetailItems.Item;
@@ -38,6 +36,10 @@ import com.android.systemui.qs.QSTile.DetailAdapter;
 import com.android.systemui.statusbar.policy.KeyguardMonitor;
 import com.android.systemui.statusbar.policy.LocationController;
 import com.android.systemui.statusbar.policy.LocationController.LocationSettingsChangeCallback;
+import com.android.systemui.volume.SegmentedButtons;
+
+import com.android.internal.logging.MetricsLogger;
+import com.android.internal.logging.MetricsProto.MetricsEvent;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -55,6 +57,9 @@ public class LocationTile extends QSTile<QSTile.State> {
     private boolean mShowingDetail;
     ArrayList<Integer> mAnimationList
             = new ArrayList<Integer>();
+
+    private static final Intent LOCATION_SETTINGS_INTENT
+            = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
 
     private final AnimationIcon mEnable =
             new AnimationIcon(R.drawable.ic_signal_location_enable_animation,
@@ -77,6 +82,11 @@ public class LocationTile extends QSTile<QSTile.State> {
     @Override
     public DetailAdapter getDetailAdapter() {
         return new LocationDetailAdapter();
+    }
+
+    @Override
+    public DetailAdapter getDetailAdapter() {
+        return mDetailAdapter;
     }
 
     @Override
@@ -153,6 +163,21 @@ public class LocationTile extends QSTile<QSTile.State> {
             showDetail(true);
         } else {
             mHost.startActivityDismissingKeyguard(new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS));
+        }
+    }
+
+    private int getStateLabelRes(int currentState) {
+        switch (currentState) {
+            case Settings.Secure.LOCATION_MODE_OFF:
+                return R.string.quick_settings_location_off_label;
+            case Settings.Secure.LOCATION_MODE_HIGH_ACCURACY:
+                return R.string.quick_settings_location_high_accuracy_label;
+            case Settings.Secure.LOCATION_MODE_BATTERY_SAVING:
+                return R.string.quick_settings_location_battery_saving_label;
+            case Settings.Secure.LOCATION_MODE_SENSORS_ONLY:
+                return R.string.quick_settings_location_gps_only_label;
+            default:
+                return R.string.quick_settings_location_label;
         }
     }
 
