@@ -96,6 +96,7 @@ public class KeyguardStatusBarView extends RelativeLayout
     public static final int FONT_NOTOSERIF_BOLD = 23;
     public static final int FONT_NOTOSERIF_BOLD_ITALIC = 24;
     private int mCarrierLabelFontStyle = FONT_NORMAL;
+    private int mCarrierFontSize = 12;
 
     private BatteryController mBatteryController;
     private KeyguardUserSwitcher mKeyguardUserSwitcher;
@@ -122,7 +123,7 @@ public class KeyguardStatusBarView extends RelativeLayout
 
     private void showStatusBarCarrier() {
         mShowCarrierLabel = Settings.System.getIntForUser(getContext().getContentResolver(),
-                Settings.System.STATUS_BAR_SHOW_CARRIER, 1, UserHandle.USER_CURRENT);
+                Settings.System.STATUS_BAR_SHOW_CARRIER, 0, UserHandle.USER_CURRENT);
         mCarrierLabelFontStyle = Settings.System.getIntForUser(getContext().getContentResolver(),
                 Settings.System.STATUS_BAR_CARRIER_FONT_STYLE, FONT_NORMAL,
                 UserHandle.USER_CURRENT);
