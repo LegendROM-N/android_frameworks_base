@@ -225,7 +225,6 @@ public abstract class BaseStatusBar extends SystemUI implements
     protected boolean mUseHeadsUp = false;
     protected boolean mHeadsUpUserEnabled = false;
     protected boolean mHeadsUpTicker = false;
-    protected boolean mHeadsUpUserEnabled = false;
     protected boolean mDisableNotificationAlerts = false;
     private boolean mIsAlwaysHeadsupDialer;
 
