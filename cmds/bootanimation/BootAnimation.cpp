@@ -27,7 +27,6 @@
 #include <utils/misc.h>
 #include <signal.h>
 #include <time.h>
-#include <sys/syscall.h>
 
 #include <cutils/properties.h>
 
@@ -100,62 +99,6 @@ static const std::vector<std::string> PLAY_SOUND_BOOTREASON_BLACKLIST {
 };
 
 // ---------------------------------------------------------------------------
-
-#ifdef MULTITHREAD_DECODE
-static const int MAX_DECODE_THREADS = 2;
-static const int MAX_DECODE_CACHE = 3;
-#endif
-
-static unsigned long getFreeMemory(void)
-{
-    int fd = open("/proc/meminfo", O_RDONLY);
-    const char* const sums[] = { "MemFree:", "Cached:", NULL };
-    const size_t sumsLen[] = { strlen("MemFree:"), strlen("Cached:"), 0 };
-    unsigned int num = 2;
-
-    if (fd < 0) {
-        ALOGW("Unable to open /proc/meminfo");
-        return -1;
-    }
-
-    char buffer[256];
-    const int len = read(fd, buffer, sizeof(buffer)-1);
-    close(fd);
-
-    if (len < 0) {
-        ALOGW("Unable to read /proc/meminfo");
-        return -1;
-    }
-    buffer[len] = 0;
-
-    size_t numFound = 0;
-    unsigned long mem = 0;
-
-    char* p = buffer;
-    while (*p && numFound < num) {
-        int i = 0;
-        while (sums[i]) {
-            if (strncmp(p, sums[i], sumsLen[i]) == 0) {
-                p += sumsLen[i];
-                while (*p == ' ') p++;
-                char* num = p;
-                while (*p >= '0' && *p <= '9') p++;
-                if (*p != 0) {
-                    *p = 0;
-                    p++;
-                    if (*p == 0) p--;
-                }
-                mem += atoll(num);
-                numFound++;
-                break;
-            }
-            i++;
-        }
-        p++;
-    }
-
-    return numFound > 0 ? mem : -1;
-}
 
 BootAnimation::BootAnimation() : Thread(false), mClockEnabled(true), mTimeIsAccurate(false),
         mTimeFormat12Hour(false), mTimeCheckThread(NULL) {
@@ -266,7 +209,8 @@ status_t BootAnimation::initTexture(FileMap* map, int* width, int* height)
     // the packed resource can be released.
     delete map;
 
-    // ensure we can call getPixels().
+    // ensure we can call getPixels(). No need to call unlock, since the
+    // bitmap will go out of scope when we return from this method.
     bitmap.lockPixels();
 
     const int w = bitmap.width();
@@ -936,33 +880,7 @@ bool BootAnimation::playAnimation(const Animation& animation)
     for (size_t i=0 ; i<pcount ; i++) {
         const Animation::Part& part(animation.parts[i]);
         const size_t fcount = part.frames.size();
-
-        // can be 1, 0, or not set
-        #ifdef NO_TEXTURE_CACHE
-        const int noTextureCache = NO_TEXTURE_CACHE;
-        #else
-        const int noTextureCache =
-                ((animation.width * animation.height * fcount) > 48 * 1024 * 1024) ? 1 : 0;
-        #endif
-
         glBindTexture(GL_TEXTURE_2D, 0);
-
-        // Calculate if we need to save memory by disabling texture cache
-        // If free memory is less than the max texture size, cache will be disabled
-        GLint mMaxTextureSize;
-        bool needSaveMem = false;
-        GLuint mTextureid;
-        glGetIntegerv(GL_MAX_TEXTURE_SIZE, &mMaxTextureSize);
-        ALOGD("Free memory: %ld, max texture size: %d", getFreeMemory(), mMaxTextureSize);
-        if (getFreeMemory() < mMaxTextureSize * mMaxTextureSize * fcount / 1024 ||
-                noTextureCache) {
-            ALOGD("Disabled bootanimation texture cache, FPS drops might occur.");
-            needSaveMem = true;
-            glGenTextures(1, &mTextureid);
-            glBindTexture(GL_TEXTURE_2D, mTextureid);
-            glTexParameterx(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-            glTexParameterx(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-        }
 
         // Handle animation package
         if (part.animation != NULL) {
@@ -989,22 +907,14 @@ bool BootAnimation::playAnimation(const Animation& animation)
                     part.backgroundColor[2],
                     1.0f);
 
-#ifdef MULTITHREAD_DECODE
-            FrameManager *frameManager = NULL;
-            if (r == 0 || needSaveMem) {
-                frameManager = new FrameManager(MAX_DECODE_THREADS,
-                    MAX_DECODE_CACHE, part.frames);
-            }
-#endif
-
             for (size_t j=0 ; j<fcount && (!exitPending() || part.playUntilComplete) ; j++) {
                 const Animation::Frame& frame(part.frames[j]);
                 nsecs_t lastFrame = systemTime();
 
-                if (r > 0 && !needSaveMem) {
+                if (r > 0) {
                     glBindTexture(GL_TEXTURE_2D, frame.tid);
                 } else {
-                    if (!needSaveMem && part.count != 1) {
+                    if (part.count != 1) {
                         glGenTextures(1, &frame.tid);
                         glBindTexture(GL_TEXTURE_2D, frame.tid);
                         glTexParameterx(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
@@ -1059,20 +969,11 @@ bool BootAnimation::playAnimation(const Animation& animation)
 
             usleep(part.pause * ns2us(frameDuration));
 
-#ifdef MULTITHREAD_DECODE
-            if (frameManager) {
-                delete frameManager;
-            }
-#endif
-
             // For infinite parts, we've now played them at least once, so perhaps exit
             if(exitPending() && !part.count)
                 break;
         }
 
-        if (needSaveMem) {
-            glDeleteTextures(1, &mTextureid);
-        }
     }
 
     // Free textures created for looping parts now that the animation is done.
