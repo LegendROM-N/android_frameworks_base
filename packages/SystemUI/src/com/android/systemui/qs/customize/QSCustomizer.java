@@ -99,7 +99,7 @@ public class QSCustomizer extends LinearLayout implements OnMenuItemClickListene
         mToolbar.setOnMenuItemClickListener(this);
         mToolbar.getMenu().add(Menu.NONE, MENU_RESET, 0,
                 mContext.getString(com.android.internal.R.string.reset));
-        mToolbar.setTitle(R.string.qs_edit); <<<<<<< HEAD
+        mToolbar.setTitle(R.string.qs_edit);
         mDefaultColumns = Math.max(1, mContext.getResources().getInteger(R.integer.quick_settings_num_columns));
 
         if (!ThemeManager.isOverlayEnabled()) {
