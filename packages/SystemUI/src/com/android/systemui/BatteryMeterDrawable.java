@@ -1,5 +1,6 @@
 /*
  * Copyright (C) 2015 The Android Open Source Project
+ * Copyright (C) 2017 The LineageOS Project
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,7 +20,6 @@ package com.android.systemui;
 import android.animation.ArgbEvaluator;
 import android.annotation.Nullable;
 import android.content.Context;
-import android.content.pm.PackageManager;
 import android.content.res.Resources;
 import android.content.res.ThemeConfig;
 import android.content.res.TypedArray;
@@ -29,11 +29,9 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.ColorFilter;
 import android.graphics.Paint;
-import android.graphics.Path;
 import android.graphics.PorterDuff;
 import android.graphics.PorterDuffXfermode;
 import android.graphics.Rect;
-import android.graphics.RectF;
 import android.graphics.Typeface;
 import android.graphics.drawable.AnimatedVectorDrawable;
 import android.graphics.drawable.BitmapDrawable;
@@ -41,9 +39,7 @@ import android.graphics.drawable.Drawable;
 import android.graphics.drawable.LayerDrawable;
 import android.graphics.drawable.StopMotionVectorDrawable;
 import android.net.Uri;
-import android.os.Bundle;
 import android.os.Handler;
-import android.provider.Settings;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
@@ -55,15 +51,10 @@ import cyanogenmod.providers.CMSettings;
 public class BatteryMeterDrawable extends Drawable implements
         BatteryController.BatteryStateChangeCallback {
 
-    private static final float ASPECT_RATIO = 9.5f / 14.5f;
     public static final String TAG = BatteryMeterDrawable.class.getSimpleName();
     public static final String SHOW_PERCENT_SETTING = "status_bar_show_battery_percent";
 
     private static final boolean SINGLE_DIGIT_PERCENT = false;
-
-    private static final int FULL = 96;
-
-    private static final float BOLT_LEVEL_THRESHOLD = 0.3f;  // opaque bolt below this fraction
 
     // Values for the different battery styles
     public static final int BATTERY_STYLE_PORTRAIT  = 0;
@@ -78,10 +69,6 @@ public class BatteryMeterDrawable extends Drawable implements
     private final int mIntrinsicHeight;
 
     private boolean mShowPercent;
-    private float mButtonHeightFraction;
-    private float mSubpixelSmoothingLeft;
-    private float mSubpixelSmoothingRight;
-    private float mTextHeight, mWarningTextHeight;
     private int mIconTint = Color.WHITE;
     private float mOldDarkIntensity = 0f;
 
@@ -89,20 +76,9 @@ public class BatteryMeterDrawable extends Drawable implements
     private int mWidth;
     private String mWarningString;
     private final int mCriticalLevel;
-    private int mChargeColor;
+
     private int mStyle;
     private boolean mBoltOverlay;
-    private final Path mBoltPath = new Path();
-    private final Path mPlusPath = new Path();
-
-    private final RectF mFrame = new RectF();
-    private final RectF mButtonFrame = new RectF();
-    private final RectF mBoltFrame = new RectF();
-    private final RectF mPlusFrame = new RectF();
-
-    private final Path mShapePath = new Path();
-    private final Path mClipPath = new Path();
-    private final Path mTextPath = new Path();
 
     private BatteryController mBatteryController;
     private boolean mPowerSaveEnabled;
@@ -120,9 +96,6 @@ public class BatteryMeterDrawable extends Drawable implements
 
     private int mLevel = -1;
     private boolean mPluggedIn;
-    private boolean mListening;
-
-    private boolean mIsAnimating; // stores charge-animation status to remove callbacks
 
     private float mTextX, mTextY; // precalculated position for drawText() to appear centered
 
@@ -172,12 +145,6 @@ public class BatteryMeterDrawable extends Drawable implements
         mWarningString = context.getString(R.string.battery_meter_very_low_overlay_symbol);
         mCriticalLevel = mContext.getResources().getInteger(
                 com.android.internal.R.integer.config_criticalBatteryWarningLevel);
-        mButtonHeightFraction = context.getResources().getFraction(
-                R.fraction.battery_button_height_fraction, 1, 1);
-        mSubpixelSmoothingLeft = context.getResources().getFraction(
-                R.fraction.battery_subpixel_smoothing_left, 1, 1);
-        mSubpixelSmoothingRight = context.getResources().getFraction(
-                R.fraction.battery_subpixel_smoothing_right, 1, 1);
 
         loadBatteryDrawables(res, style);
 
@@ -236,7 +203,6 @@ public class BatteryMeterDrawable extends Drawable implements
     }
 
     public void startListening() {
-        mListening = true;
         mContext.getContentResolver().registerContentObserver(
                 CMSettings.System.getUriFor(CMSettings.System.STATUS_BAR_SHOW_BATTERY_PERCENT),
                 false, mSettingObserver);
@@ -245,7 +211,6 @@ public class BatteryMeterDrawable extends Drawable implements
     }
 
     public void stopListening() {
-        mListening = false;
         mContext.getContentResolver().unregisterContentObserver(mSettingObserver);
         mBatteryController.removeStateChangedCallback(this);
     }
@@ -318,7 +283,6 @@ public class BatteryMeterDrawable extends Drawable implements
         super.setBounds(left, top, right, bottom);
         mHeight = bottom - top;
         mWidth = right - left;
-        mWarningTextHeight = -mWarningTextPaint.getFontMetrics().ascent;
     }
 
     private void updateShowPercent() {
