@@ -60,6 +60,7 @@ import com.android.internal.os.SamplingProfilerIntegration;
 import com.android.internal.os.ZygoteInit;
 import com.android.internal.policy.EmergencyAffordanceManager;
 import com.android.internal.widget.ILockSettings;
+import com.android.server.ThemeService;
 import com.android.server.accessibility.AccessibilityManagerService;
 import com.android.server.am.ActivityManagerService;
 import com.android.server.audio.AudioService;
@@ -206,7 +207,7 @@ public final class SystemServer {
      * visual content.
      */
     private static final int DEFAULT_SYSTEM_THEME =
-            com.android.internal.R.style.Theme_Material_DayNight_DarkActionBar;
+            com.android.internal.R.style.Theme_DeviceDefault_System;
 
     private final int mFactoryTestMode;
     private Timer mProfilerSnapshotTimer;
@@ -590,6 +591,7 @@ public final class SystemServer {
         HardwarePropertiesManagerService hardwarePropertiesService = null;
         Object wigigP2pService = null;
         Object wigigService = null;
+        ThemeService themeService = null;
 
         boolean disableStorage = SystemProperties.getBoolean("config.disable_storage", false);
         boolean disableBluetooth = SystemProperties.getBoolean("config.disable_bluetooth", false);
@@ -659,6 +661,11 @@ public final class SystemServer {
 
             traceBeginAndSlog("InstallSystemProviders");
             mActivityManagerService.installSystemProviders();
+            Trace.traceEnd(Trace.TRACE_TAG_SYSTEM_SERVER);
+
+            traceBeginAndSlog("ThemeService");
+            themeService = new ThemeService(context);
+            ServiceManager.addService(Context.THEME_SERVICE, themeService);
             Trace.traceEnd(Trace.TRACE_TAG_SYSTEM_SERVER);
 
             traceBeginAndSlog("StartVibratorService");
@@ -1115,8 +1122,9 @@ public final class SystemServer {
                     mSystemServiceManager.startService(BACKUP_MANAGER_SERVICE_CLASS);
                 }
 
-                if (mPackageManager.hasSystemFeature(PackageManager.FEATURE_APP_WIDGETS)
-                    || context.getResources().getBoolean(R.bool.config_enableAppWidgetService)) {
+                if ((mPackageManager.hasSystemFeature(PackageManager.FEATURE_APP_WIDGETS)
+                    || context.getResources().getBoolean(R.bool.config_enableAppWidgetService))
+                    && !mIsAlarmBoot) {
                     mSystemServiceManager.startService(APPWIDGET_SERVICE_CLASS);
                 }
 

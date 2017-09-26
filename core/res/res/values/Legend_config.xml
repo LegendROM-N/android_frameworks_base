@@ -43,4 +43,24 @@
         <item>com.facebook.orca</item>
         <item>com.Slack</item>
     </string-array>
+
+    <!-- Extended Boosts for QPerformance -->
+
+    <!-- Duration of the boost in seconds -->
+    <integer name="onbootboost_duration">30</integer>
+
+    <!-- Boost parameters which get passed to QPerformance -->
+    <integer-array name="onbootboost_param_value"/>
+
+    <!-- Boost parameters which get passed to QPerformance -->
+    <integer-array name="qboost_strong_param_value"/>
+    <integer-array name="qboost_weak_param_value"/>
+
+    <!-- Boost parameters which get passed to QPerformance -->
+    <integer-array name="keypressboost_strong_param_value"/>
+    <integer-array name="keypressboost_weak_param_value"/>
+
+    <!-- Defines the length of FP unlock boost -->
+    <integer name="fpunlockboost_duration">1200</integer>
+
 </resources>
